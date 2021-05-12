@@ -16,6 +16,8 @@ This is a useful resource for pipeline development time, while a required artifa
 
 * `skip_ssl_verification`: *Optional.* Skips ssl verification if defined as `true`. Default is `false`.
 
+* `extra_args`: *Optional.* Specify extra arguments for `curl`.
+
 ### Example
 
 Resource configuration:
