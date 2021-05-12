@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches:    
+      - master
+  pull_request:
+    branches:    
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build-push-pr
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ghcr.io/3dhubs/concourse-curl-resource:pr${{ github.event.number }}
+      - name: build-push-master
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ghcr.io/3dhubs/concourse-curl-resource:master
