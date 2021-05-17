@@ -2,11 +2,9 @@ check_version() {
   # args
   local tmpd="$1"
   local url="$2"
-  local args="$3"
-  shift 3
 
   # retrieves HTTP header of file URL response
-  curl -fsSL -o "$tmpd/result" -R -I --url "$url" $args
+  curl -fsSL -o "$tmpd/result" -R -I --config "$tmpd/config" --url "$url"
   local lastModifiedHeader=$(grep -i 'last-modified:' < "$tmpd/result")
 
   # Checks if field "Last-Modified" exists in HTTP header and transform it into timestamp string

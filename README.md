@@ -10,13 +10,7 @@ This is a useful resource for pipeline development time, while a required artifa
 
 * `filename`: *Optional.* The name of the file for the downloaded artifact to be save as. If not provided, the file will be saved using the full url string as its name.
 
-* `username`: *Optional.* Username for accessing an authenticated repository.
-
-* `password`: *Optional.* Password for accessing an authenticated repository.
-
-* `skip_ssl_verification`: *Optional.* Skips ssl verification if defined as `true`. Default is `false`.
-
-* `extra_args`: *Optional.* Specify extra arguments for `curl`.
+* `config`: *Optional.* String to be used as a configuration file for `curl --config`.
 
 ### Example
 
@@ -25,17 +19,25 @@ Resource configuration:
 ``` yaml
 resource_types:
 - name: file-url
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotalservices/concourse-curl-resource
-    tag: latest
+    repository: ghcr.io/3dhubs/concourse-curl-resource
+    tag: master
 
 resources:
 - name: my-file
   type: file-url
   source:
-    url: http://www-us.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz  
-    filename: lucene-5.5.4-src.tgz  
+    url: https://www.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz
+    filename: lucene-5.5.4-src.tgz
+
+- name: file-requiring-auth
+  type: file-url
+  source:
+    url: https://www.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz
+    filename: lucene-5.5.4-src.tgz
+    config: |
+      user username:password
 ```
 
 ## Behavior
