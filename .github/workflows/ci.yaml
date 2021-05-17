@@ -30,8 +30,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: addnab/docker-run-action@v3
         with:
-          registry: ghcr.io
-          image: 3dhubs/concourse-curl-resource:pr${{ github.event.number }}
+          image: ghcr.io/3dhubs/concourse-curl-resource:pr${{ github.event.number }}
           run: |
             /opt/test/test-check.sh
             /opt/test/test-in.sh
@@ -47,8 +46,7 @@ jobs:
         if: github.event_name == 'push'
         uses: addnab/docker-run-action@v3
         with:
-          registry: ghcr.io
-          image: 3dhubs/concourse-curl-resource:master
+          image: ghcr.io/3dhubs/concourse-curl-resource:master
           run: |
             /opt/test/test-check.sh
             /opt/test/test-in.sh
