@@ -18,15 +18,37 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: build-push-pr
         if: github.event_name == 'pull_request'
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: ghcr.io/3dhubs/concourse-curl-resource:pr${{ github.event.number }}
+
+      - name: test-pr
+        if: github.event_name == 'pull_request'
+        uses: addnab/docker-run-action@v3
+        with:
+          registry: ghcr.io
+          image: 3dhubs/concourse-curl-resource:pr${{ github.event.number }}
+          run: |
+            /opt/test/test-check.sh
+            /opt/test/test-in.sh
+
       - name: build-push-master
         if: github.event_name == 'push'
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: ghcr.io/3dhubs/concourse-curl-resource:master
+
+      - name: test-master
+        if: github.event_name == 'push'
+        uses: addnab/docker-run-action@v3
+        with:
+          registry: ghcr.io
+          image: 3dhubs/concourse-curl-resource:master
+          run: |
+            /opt/test/test-check.sh
+            /opt/test/test-in.sh

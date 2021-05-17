@@ -1,48 +1,31 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env ash
+
+set -o errexit
 
 source $(dirname $0)/helpers.sh
-
-export src=$(mktemp -d /tmp/in-src.XXXXXX)
-
-# set FILE_URL_WITH_LAST_MODIFIED_INFO with a URL of a file whose HTTP HEADER info provides a Last-Modified entry
-# to check it do "curl -I -R <url>"
-export FILE_URL_WITH_LAST_MODIFIED_INFO=https://s3-us-west-1.amazonaws.com/lsilva-bpws/PCF_usage/pcf-sandbox-usage-from-2016-09-01-to-2016-09-30_1475771124.json
-export FILE_NAME_1=pcf-sandbox.json
-# set FILE_URL_WITHOUT_LAST_MODIFIED_INFO with a URL of a file whose HTTP HEADER info DOES NOT provide a Last-Modified entry
-# to check it do "curl -I -R <url>"
-export FILE_URL_WITHOUT_LAST_MODIFIED_INFO=https://raw.githubusercontent.com/pivotalservices/concourse-curl-resource/master/test/data/pivotal-1.0.0.txt
-export FILE_NAME_2=ivotal-1.0.0.txt
-# set FILE_URL_BASIC_AUTH with a URL of a file that requires basic authentication
-export FILE_URL_BASIC_AUTH=https://auth-demo.aerobatic.io/protected-standard
+export tmpd="$(mktemp -d /tmp/test-in.XXXXXX)"
 
 it_can_get_file_with_date_info() {
   jq -n "{
     source: {
-      url: $(echo $FILE_URL_WITH_LAST_MODIFIED_INFO | jq -R .),
-      filename: $(echo $FILE_NAME_1 | jq -R .)
+      url: \"https://httpbin.org/json\"
     }
-  }" | $resource_dir/in "$src" | tee /dev/stderr
+  }" | $resource_dir/in "$tmpd" | tee /dev/stderr
 
+  test "$(jq -r '.slideshow.title' < "$tmpd/file")" = "Sample Slide Show"
 }
 
 it_can_get_file_with_basic_auth() {
-
-  echo "Source=[$src]"
-
   jq -n "{
     source: {
-      url: $(echo $FILE_URL_BASIC_AUTH | jq -R .),
-      username: $(echo 'aerobatic' | jq -R .),
-      password: $(echo 'aerobatic' | jq -R .),
-      filename: $(echo 'basicauth.txt' | jq -R .)
+      url: \"https://httpbin.org/basic-auth/aerobatic/aerobatic\",
+      extra_args: \"-u aerobatic:aerobatic\",
     }
-  }" | $resource_dir/in "$src" | tee /dev/stderr
+  }" | $resource_dir/in "$tmpd" | tee /dev/stderr
 
-  # cat "$src"/basicauth.txt | grep expect 
-  # should return "...Hi, we've been expecting you!..."
-
+  test "$(jq -r '.user' < "$tmpd/file")" = aerobatic
 }
+
 
 run it_can_get_file_with_date_info
 run it_can_get_file_with_basic_auth

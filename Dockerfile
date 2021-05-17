@@ -1,13 +1,4 @@
-FROM concourse/buildroot:curl
-
-ADD assets/ /opt/resource/
-ADD test/ /opt/resource-tests/
-ADD tools/ /opt/tools/
-
-RUN rm /usr/bin/jq
-RUN mv /opt/tools/jq /usr/bin/jq
-
-# Run tests
-# RUN /opt/resource-tests/test-check.sh
-# RUN /opt/resource-tests/test-in.sh
-# RUN /opt/resource-tests/test-out.sh
+FROM alpine:latest
+RUN apk add --no-cache coreutils curl jq
+COPY assets/ /opt/resource/
+COPY test /opt/test
