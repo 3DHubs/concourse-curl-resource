@@ -9,15 +9,16 @@ source "$(dirname $0)/common.sh"
 
 tmpd="$(mktemp -d /tmp/concourse-curl-resource-request.XXXXXX)"
 payload="$tmpd/payload"
+config="$tmpd/config"
 
 cat > "$payload" <&0
 
 url="$(jq -r '.source.url // ""' < $payload)"
-extra_args="$(jq -r '.source.extra_args // ""' < $payload)"
+jq -r '.source.config // ""' < "$payload" > "$config"
 
 if test -z "$url"; then
   echo "invalid payload (missing url)"
   exit 1
 fi
 
-check_version "$tmpd" "$url" "$extra_args" >&3
+check_version "$tmpd" "$url" >&3

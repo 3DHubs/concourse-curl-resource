@@ -10,7 +10,7 @@ This is a useful resource for pipeline development time, while a required artifa
 
 * `filename`: *Optional.* The name of the file for the downloaded artifact to be save as. If not provided, the file will be saved using the full url string as its name.
 
-* `extra_args`: *Optional.* Specify extra arguments for `curl`.
+* `config`: *Optional.* String to be used as a configuration file for `curl --config`.
 
 ### Example
 
@@ -28,8 +28,16 @@ resources:
 - name: my-file
   type: file-url
   source:
-    url: https://www.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz  
-    filename: lucene-5.5.4-src.tgz  
+    url: https://www.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz
+    filename: lucene-5.5.4-src.tgz
+
+- name: file-requiring-auth
+  type: file-url
+  source:
+    url: https://www.apache.org/dist/lucene/java/5.5.4/lucene-5.5.4-src.tgz
+    filename: lucene-5.5.4-src.tgz
+    config: |
+      user username:password
 ```
 
 ## Behavior

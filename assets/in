@@ -9,24 +9,25 @@ source "$(dirname $0)/common.sh"
 
 tmpd="$(mktemp -d /tmp/concourse-curl-resource-request.XXXXXX)"
 payload="$tmpd/payload"
+config="$tmpd/config"
 
 cat > "$payload" <&0
 
 url="$(jq -r '.source.url // ""' < $payload)"
 filename="$(jq -r '.source.filename // "file"' < $payload)"
-extra_args="$(jq -r '.source.extra_args // ""' < $payload)"
+jq -r '.source.config // ""' < "$payload" > "$config"
 
 if test -z "$url"; then
   echo "invalid payload (missing url)"
   exit 1
 fi
 
-version=$(check_version "$tmpd" "$url" "$extra_args")
+version=$(check_version "$tmpd" "$url")
 if test -z "$version"; then
   echo "Version could not be retrieved"
   exit 1
 fi
 
-curl -fsSL -o "$1/$filename" -R --url "$url" $extra_args
+curl -fsSL -o "$1/$filename" -R --config "$config" --url "$url"
 
 jq -n "{ version: {version: $(echo $version | jq .[].version )}}" >&3

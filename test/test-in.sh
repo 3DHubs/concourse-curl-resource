@@ -19,7 +19,7 @@ it_can_get_file_with_basic_auth() {
   jq -n "{
     source: {
       url: \"https://httpbin.org/basic-auth/aerobatic/aerobatic\",
-      extra_args: \"-u aerobatic:aerobatic\",
+      config: \"user aerobatic:aerobatic\",
     }
   }" | $resource_dir/in "$tmpd" | tee /dev/stderr
 
